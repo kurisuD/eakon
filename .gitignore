@@ -1,0 +1,6 @@
+.idea/**
+*.log
+build/**
+dist/**
+*.egg-info/**
+pypi_commands_notes.txt
