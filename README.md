@@ -159,3 +159,9 @@ Implementation of additional models should be relatively easy.
 Only standard functions are implemented, _in extenso_:
 - timers aren't supported (by lack of interest)
 - extra functions like unit cleaning, triggering of diagnostic, etc... aren't supported
+
+## Installation
+
+```bash
+python3 -m pip install eakon
+```
