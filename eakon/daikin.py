@@ -197,7 +197,7 @@ class Daikin(HVAC):
         return (bitstring.Bits(uint=self.fan_power.value, length=4) + bitstring.Bits(uint=swing, length=4)).uint
 
 
-def _test_daikin():
+def _test_daikin(send_ir=False):
     from pap_logger import PaPLogger
     import sys
     import pigpio
@@ -219,46 +219,47 @@ def _test_daikin():
     logging.info("\r{}".format(hvac))
     logging.info(hvac.bitstring)
     logging.info(hvac.wave)
-    # pi = pigpio.pi("node1", 8888)
-    # if not pi.connected:
-    #     logging.error("Could not connect to pigpiod on node2")
-    #     sys.exit(0)
-    # anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
-    # hvac = Daikin()
-    # hvac.power = daikin_enum.Power.ON
-    #
-    # temp = 21
-    # for mode in [daikin_enum.Mode.AUTO, daikin_enum.Mode.COOL, daikin_enum.Mode.DRY, daikin_enum.Mode.HEAT]:
-    #     for vert in (
-    #             daikin_enum.FanVerticalMode.TOP, daikin_enum.FanVerticalMode.TOP_MIDDLE,
-    #             daikin_enum.FanVerticalMode.MIDDLE,
-    #             daikin_enum.FanVerticalMode.BOTTOM_MIDDLE, daikin_enum.FanVerticalMode.BOTTOM,
-    #             daikin_enum.FanVerticalMode.SWING):
-    #         for fp in (daikin_enum.FanPower.AUTO, daikin_enum.FanPower.FORCE1, daikin_enum.FanPower.FORCE2,
-    #                    daikin_enum.FanPower.FORCE3, daikin_enum.FanPower.FORCE4, daikin_enum.FanPower.FORCE5,
-    #                    daikin_enum.FanPower.QUIET):
-    #             hvac.temperature = temp
-    #             hvac.mode = mode
-    #             hvac.fan_vertical_mode = vert
-    #             hvac.fan_power = fp
-    #             logging.info("\r{}".format(hvac))
-    #             logging.info(hvac.bitstring)
-    #             logging.info(hvac.wave)
-    #             anavi_phat.send_ir(code=hvac.wave)
-    #             sleep(15)
-    #             temp += 1
-    #
-    # hvac.mode = daikin_enum.Mode.AUTO
-    # hvac.fan_vertical_mode = daikin_enum.FanVerticalMode.TOP
-    # hvac.fan_power = daikin_enum.FanPower.AUTO
-    # anavi_phat.send_ir(code=hvac.wave)
-    #
-    # sleep(15)
-    # hvac.power = daikin_enum.Power.OFF
-    # logging.info("\r{}".format(hvac))
-    # logging.info(hvac.bitstring)
-    # logging.info(hvac.wave)
-    # anavi_phat.send_ir(code=hvac.wave)
+    if send_ir:
+        pi = pigpio.pi("node1", 8888)
+        if not pi.connected:
+            logging.error("Could not connect to pigpiod on node2")
+            sys.exit(0)
+        anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
+        hvac = Daikin()
+        hvac.power = daikin_enum.Power.ON
+
+        temp = 21
+        for mode in [daikin_enum.Mode.AUTO, daikin_enum.Mode.COOL, daikin_enum.Mode.DRY, daikin_enum.Mode.HEAT]:
+            for vert in (
+                    daikin_enum.FanVerticalMode.TOP, daikin_enum.FanVerticalMode.TOP_MIDDLE,
+                    daikin_enum.FanVerticalMode.MIDDLE,
+                    daikin_enum.FanVerticalMode.BOTTOM_MIDDLE, daikin_enum.FanVerticalMode.BOTTOM,
+                    daikin_enum.FanVerticalMode.SWING):
+                for fp in (daikin_enum.FanPower.AUTO, daikin_enum.FanPower.FORCE1, daikin_enum.FanPower.FORCE2,
+                           daikin_enum.FanPower.FORCE3, daikin_enum.FanPower.FORCE4, daikin_enum.FanPower.FORCE5,
+                           daikin_enum.FanPower.QUIET):
+                    hvac.temperature = temp
+                    hvac.mode = mode
+                    hvac.fan_vertical_mode = vert
+                    hvac.fan_power = fp
+                    logging.info("\r{}".format(hvac))
+                    logging.info(hvac.bitstring)
+                    logging.info(hvac.wave)
+                    anavi_phat.send_ir(code=hvac.wave)
+                    sleep(15)
+                    temp += 1
+
+        hvac.mode = daikin_enum.Mode.AUTO
+        hvac.fan_vertical_mode = daikin_enum.FanVerticalMode.TOP
+        hvac.fan_power = daikin_enum.FanPower.AUTO
+        anavi_phat.send_ir(code=hvac.wave)
+
+        sleep(15)
+        hvac.power = daikin_enum.Power.OFF
+        logging.info("\r{}".format(hvac))
+        logging.info(hvac.bitstring)
+        logging.info(hvac.wave)
+        anavi_phat.send_ir(code=hvac.wave)
 
 
 if __name__ == '__main__':

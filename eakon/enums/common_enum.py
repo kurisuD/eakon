@@ -50,3 +50,20 @@ class FanHighPower(Enum):
 class FanLong(Enum):
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
+
+
+def get_enums_dict():
+    """
+
+    :return:
+    """
+    return {"Power": Power,
+            "Mode": Mode,
+            "FanVerticalMode": FanVerticalMode,
+            "FanHorizontalMode": FanHorizontalMode,
+            "WideVanneMode": WideVanneMode,
+            "AreaMode": AreaMode,
+            "FanPower": FanPower,
+            "FanHighPower": FanHighPower,
+            "FanLong": FanLong,
+            }

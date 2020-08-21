@@ -150,29 +150,33 @@ class Hitachi(HVAC):
                                  'max_temp': 1 if self.temperature == self.__temp_max else 2}).int
 
 
-def _test_hitachi():
+def _test_hitachi(send_ir=False):
     from pap_logger import PaPLogger
     import sys
     import pigpio
     import AnaviInfraredPhat
     from time import sleep
+    anavi_phat = None
 
     PaPLogger(level=logging.INFO, verbose_fmt=True)
 
-    pi = pigpio.pi("node0", 8888)
-    if not pi.connected:
-        logging.error("Could not connect to pigpiod on node0")
-        sys.exit(0)
+    if send_ir:
 
-    anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
+        pi = pigpio.pi("node0", 8888)
+        if not pi.connected:
+            logging.error("Could not connect to pigpiod on node0")
+            sys.exit(0)
+
+        anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
 
     for mode in [hitachi_enum.Mode.COOL, hitachi_enum.Mode.DRY, hitachi_enum.Mode.HEAT]:
         for temp in range(16, 33):
             hvac = Hitachi(temperature=temp, mode=mode)
             logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
             logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
-            anavi_phat.send_ir(code=hvac.wave)
-            sleep(5)
+            if send_ir:
+                anavi_phat.send_ir(code=hvac.wave)
+                sleep(5)
 
 
 if __name__ == '__main__':

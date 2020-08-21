@@ -88,6 +88,18 @@ class FanLong(Enum):
     UNDEFINED = NOT_AVAILABLE
 
 
+def get_enums_dict():
+    """
+
+    :return:
+    """
+    return {"Power": Power,
+            "Mode": Mode,
+            "FanVerticalMode": FanVerticalMode,
+            "FanPower": FanPower,
+            }
+
+
 if __name__ == '__main__':
     print([FanVerticalMode])
     print(list(map(str, FanVerticalMode)))

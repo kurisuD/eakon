@@ -6,6 +6,8 @@ Air conditionner classes
 import abc
 import json
 import logging
+from abc import ABC
+from importlib import import_module
 from pathlib import Path
 
 from eakon.enums import common_enum
@@ -31,6 +33,7 @@ class HVAC:
 
         self.__name = type(self).__name__
         self.enum = enum
+        self._enums_dict = None
 
         if restore:
             self.restore()
@@ -116,13 +119,14 @@ class HVAC:
             try:
                 state = self.to_dict()
                 state.pop("power")
-                json_file.write_text(json.dumps())
+                json_file.write_text(json.dumps(state))
                 logging.info(f"save state to {json_file}")
             except IOError:
                 logging.exception(f"failed to save {json_file}")
 
     def __str__(self):
-        rtn = "power :\t\t\t\t\t{}\n".format(self.enum.Power(self.power).name)
+        rtn = "Model :\t\t\t\t\t{}\n".format(self.__name)
+        rtn += "power :\t\t\t\t\t{}\n".format(self.enum.Power(self.power).name)
         rtn += "mode :\t\t\t\t\t{}\n".format(self.enum.Mode(self.mode).name)
         rtn += "temperature :\t\t\t{}\u00B0C\n".format(self.temperature)
         rtn += "wide_vanne_mode :\t\t{}\n".format(self.enum.WideVanneMode(self.wide_vanne_mode).name)
@@ -346,7 +350,43 @@ class HVAC:
         """
         return self._get_wave()
 
+    @property
+    def enums(self):
+        if not self._enums_dict:
+            self._enums_dict = self.enum.get_enums_dict()
+        return self._enums_dict
+
+
+def get_eakon_instance_by_model(model_name) -> HVAC:
+    """
+    A helper function to instantiate a new class using a model name.
+    :param model_name:
+    :return:
+    """
+    model_name = model_name.lower()
+    class_name = model_name.capitalize()
+    try:
+        import_module(model_name)
+        model_class = getattr(import_module(model_name), class_name)
+        return ABC.register(type(class_name, (model_class,), {}))()
+    except (ModuleNotFoundError, TypeError) as exc:
+        logging.debug("Exception was {}".format(exc))
+        raise NotImplementedError(
+            "No module {} implementing class {} was found. Model {} is unsupported.".format(model_name, class_name,
+                                                                                            model_name))
+
 
 if __name__ == '__main__':
-    h = HVAC()
-    print(h)
+    from pap_logger import PaPLogger
+
+    PaPLogger(level=logging.INFO, verbose_fmt=True)
+    for model in ["toshiba", "hitachi", "daikin", "toto"]:
+        try:
+            e = get_eakon_instance_by_model(model)
+            e.power = e.enums["Power"].ON
+            e.temperature = 26
+            e.mode = e.enums["Mode"].COOL
+            logging.info("\r\n{}".format(e))
+            logging.info(e.bitstring)
+        except NotImplementedError as e:
+            logging.warning(e)

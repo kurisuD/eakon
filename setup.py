@@ -6,10 +6,10 @@ with open("README.md") as fh:
 
 setuptools.setup(
     name="eakon",
-    version="0.0.1",
+    version="0.0.2",
     author="KurisuD",
     author_email="KurisuD@pypi.darnand.net",
-    description="a simple library to control air-conditioners",
+    description="A simple library to control (japanese) air-conditioners",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/KurisuD/eakon",

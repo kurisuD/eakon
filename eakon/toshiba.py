@@ -139,29 +139,32 @@ class Toshiba(HVAC):
         return bitstring.pack(fmt, **data).bin
 
 
-def _test_toshiba():
+def _test_toshiba(send_ir=False):
     from pap_logger import PaPLogger
     import sys
     import pigpio
     import AnaviInfraredPhat
     from time import sleep
+    anavi_phat = None
 
     PaPLogger(level=logging.INFO, verbose_fmt=True)
 
-    pi = pigpio.pi("node2", 8888)
-    if not pi.connected:
-        logging.error("Could not connect to pigpiod on node2")
-        sys.exit(0)
+    if send_ir:
+        pi = pigpio.pi("node2", 8888)
+        if not pi.connected:
+            logging.error("Could not connect to pigpiod on node2")
+            sys.exit(0)
 
-    anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
+        anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
 
     for mode in [toshiba_enum.Mode.COOL, toshiba_enum.Mode.COOL, toshiba_enum.Mode.DRY, toshiba_enum.Mode.HEAT]:
         for temp in range(16, 31):
             hvac = Toshiba(temperature=temp, mode=mode)
             logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
             logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
-            anavi_phat.send_ir(code=hvac.wave)
-            sleep(5)
+            if send_ir:
+                anavi_phat.send_ir(code=hvac.wave)
+                sleep(5)
 
 
 if __name__ == '__main__':
