@@ -115,7 +115,7 @@ class HVAC:
         Saves the current state in a json file
         """
         if self._save_on_update:
-            json_file = Path("/tmp/") / "{}.json".format(self.__name)
+            json_file = Path("/tmp/") / "eakon_{}.json".format(self.__name)
             try:
                 state = self.to_dict()
                 state.pop("power")
