@@ -366,8 +366,8 @@ def get_eakon_instance_by_model(model_name) -> HVAC:
     model_name = model_name.lower()
     class_name = model_name.capitalize()
     try:
-        import_module(model_name)
-        model_class = getattr(import_module(model_name), class_name)
+        module_type = import_module(name=f"eakon.{model_name}")
+        model_class = getattr(module_type, class_name)
         return ABC.register(type(class_name, (model_class,), {}))()
     except (ModuleNotFoundError, TypeError) as exc:
         logging.debug("Exception was {}".format(exc))
