@@ -356,6 +356,17 @@ class HVAC:
             self._enums_dict = self.enum.get_enums_dict()
         return self._enums_dict
 
+    @property
+    def actions_options_dict(self) -> dict:
+        """
+        returns a dictionary of actions:options
+        :return:
+        """
+        hvac_actions = {}
+        for action, options in self.enums.items():
+            hvac_actions[action] = [x for x in options.__members__.keys() if x != "UNDEFINED"]
+        return hvac_actions
+
 
 def get_eakon_instance_by_model(model_name) -> HVAC:
     """
