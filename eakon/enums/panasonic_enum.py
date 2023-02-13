@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 # coding=utf-8
 """
-Toshiba HVAC enumerations classes
+Panasonic HVAC enumerations classes
+Taken from https://qiita.com/awawaInu/items/25c6e17fcc2e655d5d42
+Half degrees aren't implemented.
 """
 from enum import Enum
 
@@ -11,42 +13,31 @@ class Power(Enum):
     Power
     """
     UNDEFINED = None
-    OFF = 0x00  # TODO
-    ON = 0x8f  # TODO
+    OFF = 0b0000
+    ON = 0b1000
 
 
 class Mode(Enum):
     """
     Mode
     """
-    UNDEFINED = None
-    AUTO = 0x8
-    DRY = 0x4
-    COOL = 0x0
-    HEAT = 0xc
-    FAN = 0x1  # TODO
+    DRY = 0b0010
+    COOL = 0b1100
+    HEAT = 0b0100
+    UNDEFINED = DRY
 
 
 class FanVerticalMode(Enum):
     """
     Fan vertical sweeping
     """
-    UNDEFINED = 0x0
-    SWING = 0x0  # TODO
-    NOSWING = 0x0  # TODO
-
-
-class FanPower(Enum):
-    """
-    Fan power
-    """
-    UNDEFINED = None
-    AUTO = 0x5  # TODO
-    FORCE1 = 0xc  # TODO
-    FORCE2 = 0x2  # TODO
-    FORCE3 = 0xa  # TODO
-    FORCE4 = 0x6  # TODO
-    FORCE5 = 0xe  # TODO
+    SWING = 0b000
+    TOP = 0b0100
+    MID_TOP = 0b1100
+    MIDDLE = 0b0010
+    MID_BOTTOM = 0b1010
+    BOTTOM = 0b1111
+    UNDEFINED = SWING
 
 
 class FanHorizontalMode(Enum):
@@ -55,6 +46,28 @@ class FanHorizontalMode(Enum):
     """
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
+
+
+class FanPower(Enum):
+    """
+    Fan power
+    """
+    AUTO = 0b1100
+    FORCE1 = 0b0010
+    FORCE2 = 0b1010
+    FORCE3 = 0b1110
+    FORCE4 = 0b0101
+    UNDEFINED = AUTO
+
+
+class FanHighPower(Enum):
+    """
+    Extra power settings
+    """
+    QUIET = 0x04
+    POWERFUL = 0x80
+    NORMAL = 0
+    UNDEFINED = NORMAL
 
 
 class WideVanneMode(Enum):
@@ -73,14 +86,6 @@ class AreaMode(Enum):
     UNDEFINED = NOT_AVAILABLE
 
 
-class FanHighPower(Enum):
-    """
-    not available
-    """
-    NOT_AVAILABLE = -1
-    UNDEFINED = NOT_AVAILABLE
-
-
 class FanLong(Enum):
     """
     not available
@@ -90,11 +95,9 @@ class FanLong(Enum):
 
 
 class RoomClean(Enum):
-    """
-    not available
-    """
-    NOT_AVAILABLE = -1
-    UNDEFINED = NOT_AVAILABLE
+    ON = 0x02
+    OFF = 0x00
+    UNDEFINED = OFF
 
 
 def get_enums_dict():

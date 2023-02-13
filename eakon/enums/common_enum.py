@@ -52,6 +52,11 @@ class FanLong(Enum):
     UNDEFINED = NOT_AVAILABLE
 
 
+class RoomClean(Enum):
+    NOT_AVAILABLE = -1
+    UNDEFINED = NOT_AVAILABLE
+
+
 def get_enums_dict():
     """
 
@@ -66,4 +71,5 @@ def get_enums_dict():
             "FanPower": FanPower,
             "FanHighPower": FanHighPower,
             "FanLong": FanLong,
+            "RoomClean": RoomClean,
             }

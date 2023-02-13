@@ -87,6 +87,12 @@ class FanLong(Enum):
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
 
+class RoomClean(Enum):
+    """
+    not available
+    """
+    NOT_AVAILABLE = -1
+    UNDEFINED = NOT_AVAILABLE
 
 def get_enums_dict():
     """

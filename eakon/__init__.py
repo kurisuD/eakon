@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 """
-Air conditionner classes
+Air conditioner classes
 """
 import abc
 import json
@@ -15,7 +15,7 @@ from eakon.enums import common_enum
 
 class HVAC:
     """
-    Parent class for air conditionner
+    Parent class for air conditioner
     """
     __temp_max = 40
     __temp_min = 10
@@ -29,7 +29,7 @@ class HVAC:
 
     def __init__(self, power=None, mode=None, temperature=None, wide_vanne_mode=None, area_mode=None, fan_power=None,
                  fan_high_power=None, fan_long=None, fan_vertical_mode=None, fan_horizontal_mode=None,
-                 save_on_update=False, restore=False, enum=common_enum):
+                 save_on_update=False, restore=False, room_clean=False, enum=common_enum):
 
         self.__name = type(self).__name__
         self.enum = enum
@@ -48,6 +48,7 @@ class HVAC:
         self._fan_horizontal_mode = None
         self._power = None
         self._temperature = None
+        self._room_clean = None
         self._save_on_update = False
 
         self.power = power
@@ -67,11 +68,13 @@ class HVAC:
             self.fan_vertical_mode = fan_vertical_mode
         if fan_horizontal_mode:
             self.fan_horizontal_mode = fan_horizontal_mode
+        if room_clean:
+            self.room_clean = room_clean
         self.save_on_update = save_on_update
 
     def to_dict(self):
         """
-        Stores the current state in a dictionnary
+        Stores the current state in a dictionary
         :return: dict
         """
         return {
@@ -84,7 +87,8 @@ class HVAC:
             "fan_vertical_mode": "FanVerticalMode.{}".format(self.fan_vertical_mode.name),
             "fan_horizontal_mode": "FanHorizontalMode.{}".format(self.fan_horizontal_mode.name),
             "power": "Power.{}".format(self.power.name),
-            "temperature": "Temperature.{}".format(self.temperature)
+            "temperature": "Temperature.{}".format(self.temperature),
+            "room_clean": "RoomClean.{}".format(self.room_clean),
         }
 
     def restore(self):
@@ -136,6 +140,7 @@ class HVAC:
         rtn += "fan_vertical_mode :\t\t{}\n".format(self.enum.FanVerticalMode(self.fan_vertical_mode).name)
         rtn += "fan_horizontal_mode :\t{}\n".format(self.enum.FanHorizontalMode(self.fan_horizontal_mode).name)
         rtn += "fan_long :\t\t\t\t{}\n".format(self.enum.FanLong(self.fan_long).name)
+        rtn += "room_clean :\t\t\t{}\n".format(self.enum.RoomClean(self.room_clean).name)
         return rtn
 
     @property
@@ -306,6 +311,24 @@ class HVAC:
             self._fan_horizontal_mode = self.enum.FanHorizontalMode.UNDEFINED
 
     @property
+    def room_clean(self):
+        """
+        Sets room air cleaning function ??
+        :return:
+        """
+        return self._room_clean if self._room_clean else self.enum.RoomClean.UNDEFINED
+
+    @room_clean.setter
+    def room_clean(self, room_clean):
+        if room_clean:
+            if not isinstance(room_clean, self.enum.RoomClean):
+                raise TypeError('must be an instance of RoomClean Enum')
+            self._room_clean = room_clean
+            self.save()
+        else:
+            self._room_clean = self.enum.RoomClean.UNDEFINED
+
+    @property
     def save_on_update(self):
         """
         Get/Set the flag to save any changes to disk
@@ -391,7 +414,7 @@ if __name__ == '__main__':
     from pap_logger import PaPLogger
 
     PaPLogger(level=logging.INFO, verbose_fmt=True)
-    for model in ["toshiba", "hitachi", "daikin", "toto"]:
+    for model in ["toshiba", "hitachi", "daikin", "panasonic"]:
         try:
             e = get_eakon_instance_by_model(model)
             e.power = e.enums["Power"].ON

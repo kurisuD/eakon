@@ -66,21 +66,41 @@ class FanPower(Enum):
 
 
 class WideVanneMode(Enum):
+    """
+    not available
+    """
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
 
 
 class AreaMode(Enum):
+    """
+    not available
+    """
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
 
 
 class FanHighPower(Enum):
+    """
+    not available
+    """
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
 
 
 class FanLong(Enum):
+    """
+    not available
+    """
+    NOT_AVAILABLE = -1
+    UNDEFINED = NOT_AVAILABLE
+
+
+class RoomClean(Enum):
+    """
+    not available
+    """
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
 
