@@ -260,11 +260,13 @@ recent (2020) japanese models.
 Development was done with the following models of remote controls:
 
 - Daikin ARC47850 (Units models C and CX at least)
-- Hitachi SP-RC4 (covers [a lot of hitachi models](https://kadenfan.hitachi.co.jp/ra/parts/supply/sprc4.html))
-- Toshiba RG66J5 (apparently all units from 2020, possibly also few years before ?)
-- Panasonic (basic model)
   Daikin has at least 2 other protocols available in Japan (Moreover, it is likely that protocols used for non-domestic
   market differs).
+
+- Hitachi SP-RC4 (covers [a lot of hitachi models](https://kadenfan.hitachi.co.jp/ra/parts/supply/sprc4.html))
+- Toshiba RG66J5 (apparently all units from 2020, possibly also few years before ?)
+- Panasonic ACRA75C series (CS-xxxCF* air-conditioning units -
+  see https://ec-plus.panasonic.jp/store/ap/storeaez/a2A/ProductDetail?HB=ACRA75C13970X)
 
 Implementation of additional models should be relatively easy.
 

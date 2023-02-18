@@ -3,6 +3,7 @@
 """
 Panasonic HVAC enumerations classes
 Taken from https://qiita.com/awawaInu/items/25c6e17fcc2e655d5d42
+also in english at https://www.analysir.com/blog/2014/12/27/reverse-engineering-panasonic-ac-infrared-protocol/
 Half degrees aren't implemented.
 """
 from enum import Enum
@@ -13,17 +14,19 @@ class Power(Enum):
     Power
     """
     UNDEFINED = None
-    OFF = 0b0000
-    ON = 0b1000
+    OFF = 0b00001000
+    ON = 0b00001001
 
 
 class Mode(Enum):
     """
     Mode
     """
-    DRY = 0b0010
-    COOL = 0b1100
-    HEAT = 0b0100
+    FAN = 0b01100000
+    DRY = 0b00100000
+    COOL = 0b00110000
+    HEAT = 0b01000000
+    AUTO = 0b00000000
     UNDEFINED = DRY
 
 
@@ -31,12 +34,12 @@ class FanVerticalMode(Enum):
     """
     Fan vertical sweeping
     """
-    SWING = 0b000
-    TOP = 0b0100
-    MID_TOP = 0b1100
-    MIDDLE = 0b0010
-    MID_BOTTOM = 0b1010
-    BOTTOM = 0b1111
+    TOP = 0b10000000
+    MID_TOP = 0b01000000
+    MIDDLE = 0b11000000
+    MID_BOTTOM = 0b00100000
+    BOTTOM = 0b10100000
+    SWING = 0b11110000
     UNDEFINED = SWING
 
 
@@ -54,9 +57,9 @@ class FanPower(Enum):
     """
     AUTO = 0b1100
     FORCE1 = 0b0010
-    FORCE2 = 0b1010
-    FORCE3 = 0b1110
-    FORCE4 = 0b0101
+    FORCE2 = 0b0101
+    FORCE3 = 0b1010
+    FORCE4 = 0b1110
     UNDEFINED = AUTO
 
 

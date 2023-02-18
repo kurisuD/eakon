@@ -12,6 +12,8 @@ from pathlib import Path
 
 from eakon.enums import common_enum
 
+__available_models__ = ["daikin", "hitachi", "panasonic", "toshiba"]
+
 
 class HVAC:
     """
@@ -408,6 +410,10 @@ def get_eakon_instance_by_model(model_name) -> HVAC:
         raise NotImplementedError(
             "No module {} implementing class {} was found. Model {} is unsupported.".format(model_name, class_name,
                                                                                             model_name))
+
+
+def get_available_models() -> [str]:
+    return __available_models__
 
 
 if __name__ == '__main__':

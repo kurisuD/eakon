@@ -29,18 +29,12 @@ class Panasonic(HVAC):
     Panasonic basic remote control
     """
 
-    __INTER_FRAME_SPACE = 10022
-    __HDR_FIRST_MARK = 3488
-    __HDR_FIRST_SPACE = 1729
+    __INTER_FRAME_SPACE = 10000
+    __HDR_FIRST_MARK = 3500
+    __HDR_FIRST_SPACE = 1750
     __MARK = 444
-    __ONE_SPACE = 1295
-    __ZERO_SPACE = 429
-    # __INTER_FRAME_SPACE = 10000
-    # __HDR_FIRST_MARK = 3500
-    # __HDR_FIRST_SPACE = 1750
-    # __MARK = 444
-    # __ONE_SPACE = 1300
-    # __ZERO_SPACE = 430
+    __ONE_SPACE = 1300
+    __ZERO_SPACE = 430
     __temp_max = 30
     __temp_min = 16
     __start_mark = [__HDR_FIRST_MARK, __HDR_FIRST_SPACE]
@@ -94,10 +88,6 @@ class Panasonic(HVAC):
             "b8": 0x06,
         }
         self._reverse_endianness(frame1_data)
-        # data = {}
-        # for k, v in frame1_data.items():
-        #     data["b{}".format(k)] = v
-        #     data["b{}".format(k + 1)] = (~bitstring.Bits(uint=v, length=8)).uint
 
         return bitstring.pack(fmt, **frame1_data).bin
 
@@ -121,9 +111,8 @@ class Panasonic(HVAC):
         uint: 8 = b16,
         uint: 8 = b17,
         uint: 8 = b18,
-        uint: 8 = b19
+        uint: 8 = cs
         """
-
         frame2_data = {
             "b1": 0x02,
             "b2": 0x20,
@@ -133,7 +122,7 @@ class Panasonic(HVAC):
             "b6": self._get_power_status_and_mode(),
             "b7": _convert_int_endianness(2 * self.temperature),
             "b8": 0x80,
-            "b9": self._get_fan_settings(),
+            "b9": _convert_int_endianness(self._get_fan_settings()),
             "b10": 0x00,
             "b11": 0x00,
             "b12": 0x06,
@@ -143,23 +132,17 @@ class Panasonic(HVAC):
             "b16": 0x80,
             "b17": 0x00,
             "b18": 0x06,
-            "b19": 0x84,
 
         }
-        self._reverse_endianness(frame2_data)
-        # data = {}
-        # for k, v in frame1_data.items():
-        #     data["b{}".format(k)] = v
-        #     data["b{}".format(k + 1)] = (~bitstring.Bits(uint=v, length=8)).uint
         self._get_checksum(frame2_data)
+        self._reverse_endianness(frame2_data)
         return bitstring.pack(fmt, **frame2_data).bin
 
     @staticmethod
     def _get_checksum(data):
         checksum = 0
-        for b in data.values():
+        for k, b in data.items():
             checksum += b
-
         try:
             cs = bitstring.Bits(uint=checksum & 0xff, length=8)
         except bitstring.CreationError:
@@ -168,16 +151,13 @@ class Panasonic(HVAC):
             logging.exception("Checksum value before reverse after masking : {}".format(checksum & 0xff))
             logging.exception("data was\r\n{}".format(pformat(data)))
             sys.exit(0)
-        # cs._reverse()
         checksum = {
             "cs": cs.uint
         }
         data.update(checksum)
 
     def _get_power_status_and_mode(self):
-        rtn = self.enum.Power(self.power).value + self.mode.value
-        # print(rtn," - ",hex(rtn))
-        return rtn
+        return self.power.value + self.mode.value
 
     @staticmethod
     def _reverse_endianness(data):
@@ -186,21 +166,11 @@ class Panasonic(HVAC):
             b._reverse()
             data[k] = b.uint
 
-    def _get_temp_intcode(self):
-        temp = bitstring.pack('uint:4=temp',
-                              **{'temp': 0 if self.temperature == self.__temp_max else self.temperature - 16})
-        temp.reverse()
-        return bitstring.pack('uint:2=zero,uint:4=inv_temp,uint:2=max_temp',
-                              **{'zero': 0,
-                                 'inv_temp': temp.uint,
-                                 'max_temp': 1 if self.temperature == self.__temp_max else 2}).int
-
     def _get_fan_settings(self):
-        rtn = self.enum.FanVerticalMode(self.fan_vertical_mode).value + self.enum.FanPower(self.fan_power).value
-        return rtn
+        return self.fan_vertical_mode.value + self.fan_power.value
 
     def _get_extra_fan_settings(self):
-        return self.enum.FanHighPower(self.fan_high_power).value + self.enum.RoomClean(self.room_clean).value
+        return self.fan_high_power.value + self.room_clean.value
 
 
 def _test_panasonic(send_ir=False):
@@ -222,9 +192,12 @@ def _test_panasonic(send_ir=False):
 
         anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
 
-    # for mode in [panasonic_enum.Mode.COOL, panasonic_enum.Mode.DRY, panasonic_enum.Mode.HEAT]:
-    #     for temp in range(16, 17):
-    hvac = Panasonic(power=panasonic_enum.Power.ON, temperature=17, mode=panasonic_enum.Mode.COOL)
+    hvac = Panasonic(power=panasonic_enum.Power.ON, temperature=25, mode=panasonic_enum.Mode.HEAT,
+                     fan_power=panasonic_enum.FanPower.FORCE3, fan_vertical_mode=panasonic_enum.FanVerticalMode.TOP)
+    from pprint import pformat
+    logging.info(
+        pformat(hvac.to_dict())
+    )
     logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
     logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
     if send_ir:
@@ -234,4 +207,4 @@ def _test_panasonic(send_ir=False):
 
 
 if __name__ == '__main__':
-    _test_panasonic(send_ir=False)
+    _test_panasonic(send_ir=True)
