@@ -3,6 +3,7 @@
 """
 Air conditioner classes
 """
+__version__ = "0.0.6"
 import abc
 import json
 import logging
