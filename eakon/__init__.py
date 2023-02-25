@@ -3,7 +3,9 @@
 """
 Air conditioner classes
 """
-__version__ = "0.0.6"
+__version__ = "0.0.8"
+__available_models__ = ["daikin", "hitachi", "panasonic", "toshiba"]
+
 import abc
 import json
 import logging
@@ -12,8 +14,6 @@ from importlib import import_module
 from pathlib import Path
 
 from eakon.enums import common_enum
-
-__available_models__ = ["daikin", "hitachi", "panasonic", "toshiba"]
 
 
 class HVAC:
@@ -421,7 +421,7 @@ if __name__ == '__main__':
     from pap_logger import PaPLogger
 
     PaPLogger(level=logging.INFO, verbose_fmt=True)
-    for model in ["toshiba", "hitachi", "daikin", "panasonic"]:
+    for model in __available_models__:
         try:
             e = get_eakon_instance_by_model(model)
             e.power = e.enums["Power"].ON

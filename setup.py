@@ -6,7 +6,7 @@ with open("README.md") as fh:
 
 setuptools.setup(
     name="eakon",
-    version="0.0.6",
+    version="0.0.8",
     author="KurisuD",
     author_email="KurisuD@pypi.darnand.net",
     description="A simple library to control (japanese) air-conditioners",
