@@ -9,6 +9,12 @@ Half degrees aren't implemented.
 from enum import Enum
 
 
+class TempRange(Enum):
+    MIN = 16
+    STEP = 1.0  # will need update later on
+    MAX = 30
+
+
 class Power(Enum):
     """
     Power
@@ -112,6 +118,8 @@ def get_enums_dict():
             "Mode": Mode,
             "FanVerticalMode": FanVerticalMode,
             "FanPower": FanPower,
+            "FanHighPower": FanHighPower,
+            "RoomClean": RoomClean,
             }
 
 

@@ -5,9 +5,9 @@ Air conditioner classes
 """
 
 import logging
-import sys
 
 import bitstring
+import sys
 
 from eakon import HVAC
 from eakon.enums import daikin_enum
@@ -87,8 +87,8 @@ class Daikin(HVAC):
             "b6": 0x00,
             "b7": 0x00,
             "b8": 0x00,
-            "b9": 0x00 if self.power == self.enum.Power.ON else 0x80,
-            "b10": self.fan_vertical_mode.value if self.fan_vertical_mode != self.enum.FanVerticalMode.SWING else 0x0,
+            "b9": self._get_frame1_power(),
+            "b10": self._get_frame1_vertical_mode(),
             "b11": 0x00,
             "b12": 0x00,
             "b13": 0x00,
@@ -100,6 +100,12 @@ class Daikin(HVAC):
         self._reverse_endianness_and_get_checksum(data)
 
         return bitstring.pack(fmt, **data).bin
+
+    def _get_frame1_vertical_mode(self):
+        return self.fan_vertical_mode.value if self.fan_vertical_mode != self._enum.FanVerticalMode.SWING else 0x0
+
+    def _get_frame1_power(self):
+        return 0x00 if self.power == self._enum.Power.ON else 0x80
 
     def _get_bitstring_frame2(self):
         fmt = """
@@ -174,9 +180,9 @@ class Daikin(HVAC):
         data.update(checksum)
 
     def _get_temp_intcode(self):
-        if self.mode in (self.enum.Mode.COOL, self.enum.Mode.HEAT):
+        if self.mode in (self._enum.Mode.COOL, self._enum.Mode.HEAT):
             return self.temperature * 2
-        elif self.mode in (self.enum.Mode.DRY, self.enum.Mode.AUTO):
+        elif self.mode in (self._enum.Mode.DRY, self._enum.Mode.AUTO):
             return 0x3  # TODO : review
         else:
             return 0xc  # TODO : review
@@ -185,7 +191,7 @@ class Daikin(HVAC):
         return (bitstring.Bits(uint=self.mode.value, length=4) + bitstring.Bits(uint=self.power.value, length=4)).uint
 
     def _get_humidity_setting(self):
-        if self.mode in (self.enum.Mode.COOL, self.enum.Mode.FAN):
+        if self.mode in (self._enum.Mode.COOL, self._enum.Mode.FAN):
             return 0x0
         else:
             # more settings available according to http://nandra.segv.jp/ir-remote/daikin2.html
@@ -193,7 +199,7 @@ class Daikin(HVAC):
             return 0x8
 
     def _get_swing_and_force(self):
-        swing = 0xf if self.fan_vertical_mode == self.enum.FanVerticalMode.SWING else 0x0
+        swing = 0xf if self.fan_vertical_mode == self._enum.FanVerticalMode.SWING else 0x0
         return (bitstring.Bits(uint=self.fan_power.value, length=4) + bitstring.Bits(uint=swing, length=4)).uint
 
 

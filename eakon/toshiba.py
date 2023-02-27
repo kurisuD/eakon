@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # coding=utf-8
 """
-Air conditionner classes
+Air conditioner classes
 """
 
 import logging
@@ -14,7 +14,7 @@ from eakon.enums import toshiba_enum
 
 class Toshiba(HVAC):
     """
-    Mitsubishi FG86
+    Toshiba RG66J5
     """
     __HDR_FIRST_MARK = 4439
     __HDR_FIRST_SPACE = 4708
@@ -85,7 +85,7 @@ class Toshiba(HVAC):
         return bitstring.pack(fmt, **data).bin
 
     def _get_n5(self):
-        if self.mode == self.enum.Mode.AUTO or self.mode == self.enum.Mode.DRY:
+        if self.mode == self._enum.Mode.AUTO or self.mode == self._enum.Mode.DRY:
             return 0x1
         else:
             return 0xb
@@ -121,19 +121,19 @@ class Toshiba(HVAC):
         uint: 8 = b6,
         """
 
-        def get_b6():
+        def _get_b6():
             if self.temperature > self.__temp_min:
-                return 0x3a if self.mode in (self.enum.Mode.AUTO, self.enum.Mode.DRY) else 0x3b
+                return 0x3a if self.mode in (self._enum.Mode.AUTO, self._enum.Mode.DRY) else 0x3b
             else:
-                return 0x4a if self.mode in (self.enum.Mode.AUTO, self.enum.Mode.DRY) else 0x4b
+                return 0x4a if self.mode in (self._enum.Mode.AUTO, self._enum.Mode.DRY) else 0x4b
 
         data = {
             'b1': 0xd5,
-            'b2': 0x65 if self.mode in (self.enum.Mode.AUTO, self.enum.Mode.DRY) else 0x66,
+            'b2': 0x65 if self.mode in (self._enum.Mode.AUTO, self._enum.Mode.DRY) else 0x66,
             "b3": 0x00,
             "b4": 0x00 if self.temperature > self.__temp_min else 0x10,
             "b5": 0x00,
-            "b6": get_b6(),
+            "b6": _get_b6(),
         }
 
         return bitstring.pack(fmt, **data).bin

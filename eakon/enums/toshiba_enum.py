@@ -6,6 +6,12 @@ Toshiba HVAC enumerations classes
 from enum import Enum
 
 
+class TempRange(Enum):
+    MIN = 16
+    STEP = 1.0
+    MAX = 30
+
+
 class Power(Enum):
     """
     Power
@@ -19,34 +25,34 @@ class Mode(Enum):
     """
     Mode
     """
-    UNDEFINED = None
     AUTO = 0x8
     DRY = 0x4
     COOL = 0x0
     HEAT = 0xc
     FAN = 0x1  # TODO
+    UNDEFINED = AUTO
 
 
 class FanVerticalMode(Enum):
     """
     Fan vertical sweeping
     """
-    UNDEFINED = 0x0
     SWING = 0x0  # TODO
     NOSWING = 0x0  # TODO
+    UNDEFINED = NOSWING
 
 
 class FanPower(Enum):
     """
     Fan power
     """
-    UNDEFINED = None
     AUTO = 0x5  # TODO
     FORCE1 = 0xc  # TODO
     FORCE2 = 0x2  # TODO
     FORCE3 = 0xa  # TODO
     FORCE4 = 0x6  # TODO
     FORCE5 = 0xe  # TODO
+    UNDEFINED = AUTO
 
 
 class FanHorizontalMode(Enum):

@@ -12,8 +12,9 @@ from eakon.enums import hitachi_enum
 
 
 class Hitachi(HVAC):
+    # TODO : implement at least fan power and vertical mode
     """
-    Mitsubishi FG86
+    Hitachi SP-RC4
     """
     __HDR_FIRST_MARK = 29785
     __HDR_FIRST_SPACE = 49362

@@ -2,9 +2,15 @@
 # coding=utf-8
 """
 This class is a skeleton of all enumerations our parent Hvac class can access to.
-All implementations of Hvac must overwrite Hvac class enum property using their own enumerations
+All implementations of Hvac must overwrite Hvac class _enum property using their own enumerations
 """
 from enum import Enum
+
+
+class TempRange(Enum):
+    MIN = 16
+    STEP = 1.0
+    MAX = 30
 
 
 class Power(Enum):

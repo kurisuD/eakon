@@ -6,6 +6,12 @@ Hitachi HVAC enumerations classes
 from enum import Enum
 
 
+class TempRange(Enum):
+    MIN = 16
+    STEP = 1.0
+    MAX = 30
+
+
 class Power(Enum):
     """
     Power
@@ -30,22 +36,22 @@ class FanVerticalMode(Enum):
     """
     Fan vertical sweeping
     """
-    UNDEFINED = 0x0
     SWING = 0x0  # TODO
     NOSWING = 0x0  # TODO
+    UNDEFINED = NOSWING
 
 
 class FanPower(Enum):
     """
     Fan power
     """
-    UNDEFINED = None
     AUTO = 0x5  # TODO
     FORCE1 = 0xc  # TODO
     FORCE2 = 0x2  # TODO
     FORCE3 = 0xa  # TODO
     FORCE4 = 0x6  # TODO
     FORCE5 = 0xe  # TODO
+    UNDEFINED = AUTO
 
 
 class FanHorizontalMode(Enum):
@@ -87,12 +93,14 @@ class FanLong(Enum):
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
 
+
 class RoomClean(Enum):
     """
     not available
     """
     NOT_AVAILABLE = -1
     UNDEFINED = NOT_AVAILABLE
+
 
 def get_enums_dict():
     """
