@@ -3,7 +3,7 @@
 """
 Air conditioner classes
 """
-__version__ = "0.0.10"
+__version__ = "0.0.11"
 __available_models__ = ["daikin", "hitachi", "panasonic", "toshiba"]
 
 import abc
@@ -51,6 +51,7 @@ class HVAC:
         self._temperature = None
         self._room_clean = None
         self._save_on_update = False
+        self._save_power_on_update = False
 
         self.power = power
         self.mode = mode
@@ -101,7 +102,7 @@ class HVAC:
                 logging.info("loading state from {}".format(self.json_file))
                 hvac_dict = json.loads(self.json_file.read_text())
                 for k, v in hvac_dict.items():
-                    if isinstance(v, int):
+                    if isinstance(v, int) or isinstance(v, float):
                         val = v
                     else:
                         split = v.split(".")
@@ -121,7 +122,8 @@ class HVAC:
         if self._save_on_update:
             try:
                 state = self.to_dict()
-                state.pop("power")
+                if not self.save_power_on_update:
+                    state.pop("power")
                 self.json_file.write_text(json.dumps(state))
                 logging.info("save state to {}".format(self.json_file))
             except IOError:
@@ -158,7 +160,7 @@ class HVAC:
         Get/Set the power state
         :return: Power
         """
-        return self._power if self._power else None
+        return self._power if self._power else self._power.UNDEFINED
 
     @power.setter
     def power(self, power):
@@ -166,7 +168,8 @@ class HVAC:
             if not isinstance(power, self._enum.Power):
                 raise TypeError('must be an instance of Power Enum')
             self._power = power
-            self.save()
+            if self.save_power_on_update:
+                self.save()
 
     @property
     def mode(self):
@@ -364,7 +367,7 @@ class HVAC:
     @property
     def save_on_update(self):
         """
-        Get/Set the flag to save any changes to disk
+        Get/Set the flag to save any changes (but power) to disk
         :return:
         """
         return self._save_on_update
@@ -375,6 +378,21 @@ class HVAC:
             if not isinstance(save_on_update, bool):
                 raise TypeError('must be an instance of bool')
             self._save_on_update = save_on_update
+
+    @property
+    def save_power_on_update(self):
+        """
+        Get/Set the flag to allow power changes save to disk
+        :return:
+        """
+        return self._save_power_on_update
+
+    @save_power_on_update.setter
+    def save_power_on_update(self, save_power_on_update):
+        if save_power_on_update is not None:
+            if not isinstance(save_power_on_update, bool):
+                raise TypeError('must be an instance of bool')
+            self._save_power_on_update = save_power_on_update
 
     def _get_one(self):
         return [self.one_mark, self.one_space]
