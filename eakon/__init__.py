@@ -3,7 +3,7 @@
 """
 Air conditioner classes
 """
-__version__ = "0.0.9"
+__version__ = "0.0.10"
 __available_models__ = ["daikin", "hitachi", "panasonic", "toshiba"]
 
 import abc
@@ -35,7 +35,7 @@ class HVAC:
 
         self.__name = type(self).__name__
         self._enum = enum
-
+        self._json_file = Path().cwd() / "eakon_{}.json".format(self.__name)
         if restore:
             self.restore()
 
@@ -96,11 +96,10 @@ class HVAC:
         """
         restore the state of the class from file.
         """
-        json_file = Path("/tmp/") / "eakon_{}.json".format(self.__name)
         try:
-            if json_file.exists():
-                logging.info("loading state from {}".format(json_file))
-                hvac_dict = json.loads(json_file.read_text())
+            if self.json_file.exists():
+                logging.info("loading state from {}".format(self.json_file))
+                hvac_dict = json.loads(self.json_file.read_text())
                 for k, v in hvac_dict.items():
                     if isinstance(v, int):
                         val = v
@@ -109,9 +108,9 @@ class HVAC:
                         val = getattr(self._enum, split[0])[split[1]]
                     self.__setattr__(k, val)
             else:
-                logging.warning("failed to load from {} : file doesn't exists.".format(json_file))
+                logging.warning("failed to load from {} : file doesn't exists.".format(self.json_file))
         except IOError:
-            logging.exception("failed to load from {}".format(json_file))
+            logging.exception("failed to load from {}".format(self.json_file))
         except Exception as exc:
             logging.exception(exc)
 
@@ -120,14 +119,23 @@ class HVAC:
         Saves the current state in a json file
         """
         if self._save_on_update:
-            json_file = Path("/tmp/") / "eakon_{}.json".format(self.__name)
             try:
                 state = self.to_dict()
                 state.pop("power")
-                json_file.write_text(json.dumps(state))
-                logging.info(f"save state to {json_file}")
+                self.json_file.write_text(json.dumps(state))
+                logging.info("save state to {}".format(self.json_file))
             except IOError:
-                logging.exception(f"failed to save {json_file}")
+                logging.exception("failed to save {}".format(self.json_file))
+
+    @property
+    def json_file(self) -> Path:
+        return self._json_file
+
+    @json_file.setter
+    def json_file(self, value: Union[str, Path]):
+        _json_file = Path(value)
+        _json_file.parent.mkdir(parents=True, exist_ok=True)
+        self._json_file = _json_file
 
     def __str__(self):
         rtn = "Model :\t\t\t\t\t{}\n".format(self.__name)
@@ -359,14 +367,14 @@ class HVAC:
         Get/Set the flag to save any changes to disk
         :return:
         """
-        return self.__save_on_update
+        return self._save_on_update
 
     @save_on_update.setter
     def save_on_update(self, save_on_update):
         if save_on_update is not None:
             if not isinstance(save_on_update, bool):
                 raise TypeError('must be an instance of bool')
-            self.__save_on_update = save_on_update
+            self._save_on_update = save_on_update
 
     def _get_one(self):
         return [self.one_mark, self.one_space]
@@ -427,7 +435,7 @@ def get_eakon_instance_by_model(model_name) -> HVAC:
     model_name = model_name.lower()
     class_name = model_name.capitalize()
     try:
-        module_type = import_module(name=f"eakon.{model_name}")
+        module_type = import_module(name="eakon.{}".format(model_name))
         model_class = getattr(module_type, class_name)
         return ABC.register(type(class_name, (model_class,), {}))()
     except (ModuleNotFoundError, TypeError) as exc:
