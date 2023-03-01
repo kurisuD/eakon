@@ -3,7 +3,7 @@
 """
 Air conditioner classes
 """
-__version__ = "0.0.11"
+__version__ = "0.0.12"
 __available_models__ = ["daikin", "hitachi", "panasonic", "toshiba"]
 
 import abc
@@ -89,7 +89,7 @@ class HVAC:
             "fan_vertical_mode": "FanVerticalMode.{}".format(self.fan_vertical_mode.name),
             "fan_horizontal_mode": "FanHorizontalMode.{}".format(self.fan_horizontal_mode.name),
             "power": "Power.{}".format(self.power.name),
-            "temperature": "Temperature.{}".format(self.temperature),
+            "temperature": self.temperature,
             "room_clean": "RoomClean.{}".format(self.room_clean),
         }
 

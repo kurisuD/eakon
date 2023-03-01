@@ -170,15 +170,15 @@ def _test_hitachi(send_ir=False):
 
         anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
 
-    for mode in [hitachi_enum.Mode.COOL, hitachi_enum.Mode.DRY, hitachi_enum.Mode.HEAT]:
-        for temp in range(16, 33):
-            hvac = Hitachi(temperature=temp, mode=mode)
-            logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
-            logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
-            if send_ir:
-                anavi_phat.send_ir(code=hvac.wave)
-                sleep(5)
+    # for mode in [hitachi_enum.Mode.COOL, hitachi_enum.Mode.DRY, hitachi_enum.Mode.HEAT]:
+    #     for temp in range(16, 33):
+    hvac = Hitachi(power=hitachi_enum.Power.OFF, mode=hitachi_enum.Mode.HEAT, temperature=16)
+    logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
+    logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
+    if send_ir:
+        anavi_phat.send_ir(code=hvac.wave)
+        sleep(5)
 
 
 if __name__ == '__main__':
-    _test_hitachi()
+    _test_hitachi(send_ir=True)

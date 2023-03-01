@@ -4,9 +4,9 @@
 Panasonic air conditioner classes
 """
 import logging
-import sys
 
 import bitstring
+import sys
 
 from eakon import HVAC
 from eakon.enums import panasonic_enum
@@ -185,15 +185,16 @@ def _test_panasonic(send_ir=False):
 
     if send_ir:
 
-        pi = pigpio.pi("node1.warwick.local", 8888)
+        pi = pigpio.pi("192.168.104.218", 8888)
         if not pi.connected:
             logging.error("Could not connect to pigpiod on node1")
             sys.exit(0)
 
         anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
 
-    hvac = Panasonic(power=panasonic_enum.Power.ON, temperature=25, mode=panasonic_enum.Mode.HEAT,
+    hvac = Panasonic(power=panasonic_enum.Power.OFF, temperature=21, mode=panasonic_enum.Mode.FAN,
                      fan_power=panasonic_enum.FanPower.FORCE3, fan_vertical_mode=panasonic_enum.FanVerticalMode.TOP)
+    hvac.save_on_update = True
     from pprint import pformat
     logging.info(
         pformat(hvac.to_dict())
