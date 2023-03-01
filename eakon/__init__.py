@@ -160,7 +160,7 @@ class HVAC:
         Get/Set the power state
         :return: Power
         """
-        return self._power if self._power else self._power.UNDEFINED
+        return self._power if self._power else self._enum.Power.UNDEFINED
 
     @power.setter
     def power(self, power):
