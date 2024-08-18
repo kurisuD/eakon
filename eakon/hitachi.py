@@ -118,7 +118,7 @@ class Hitachi(HVAC):
             19: 0x00,
             21: 0x00,
             23: self.mode.value,
-            25: 0x0f,  # AH AH
+            25: 0x8f,
             27: 0x00,
             29: 0x00,
             31: 0x01,
@@ -163,18 +163,23 @@ def _test_hitachi(send_ir=False):
 
     if send_ir:
 
-        pi = pigpio.pi("node0", 8888)
+        pi = pigpio.pi("l", 8888)
         if not pi.connected:
-            logging.error("Could not connect to pigpiod on node0")
+            logging.error("Could not connect to pigpiod on l")
             sys.exit(0)
 
         anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
 
-    # for mode in [hitachi_enum.Mode.COOL, hitachi_enum.Mode.DRY, hitachi_enum.Mode.HEAT]:
-    #     for temp in range(16, 33):
-    hvac = Hitachi(power=hitachi_enum.Power.OFF, mode=hitachi_enum.Mode.HEAT, temperature=16)
+    hvac = Hitachi(power=hitachi_enum.Power.OFF, mode=hitachi_enum.Mode.DRY, temperature=26,
+                   fan_power=hitachi_enum.FanPower.AUTO)
     logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
     logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
+
+    # for mode in [hitachi_enum.Mode.COOL, hitachi_enum.Mode.DRY, hitachi_enum.Mode.HEAT]:
+    #     for temp in range(16, 33):
+    #         hvac = Hitachi(power=hitachi_enum.Power.OFF, mode=mode, temperature=temp, fan_power=hitachi_enum.FanPower.AUTO)
+    #         logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
+    #         logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
     if send_ir:
         anavi_phat.send_ir(code=hvac.wave)
         sleep(5)
