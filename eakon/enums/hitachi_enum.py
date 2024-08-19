@@ -17,7 +17,7 @@ class Power(Enum):
     Power
     """
     UNDEFINED = None
-    OFF = 0x00  # TODO
+    OFF = 0x87  # TODO
     ON = 0x8f  # TODO
 
 

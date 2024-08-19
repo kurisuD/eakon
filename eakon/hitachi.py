@@ -118,7 +118,7 @@ class Hitachi(HVAC):
             19: 0x00,
             21: 0x00,
             23: self.mode.value,
-            25: 0x8f,
+            25: self.power.value,
             27: 0x00,
             29: 0x00,
             31: 0x01,
@@ -170,7 +170,7 @@ def _test_hitachi(send_ir=False):
 
         anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
 
-    hvac = Hitachi(power=hitachi_enum.Power.OFF, mode=hitachi_enum.Mode.DRY, temperature=26,
+    hvac = Hitachi(power=hitachi_enum.Power.OFF, mode=hitachi_enum.Mode.COOL, temperature=26,
                    fan_power=hitachi_enum.FanPower.AUTO)
     logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
     logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
