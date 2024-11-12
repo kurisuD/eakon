@@ -8,6 +8,7 @@ import logging
 
 import bitstring
 import sys
+from bitstring import BitArray
 
 from eakon import HVAC
 from eakon.enums import daikin_enum
@@ -162,8 +163,9 @@ class Daikin(HVAC):
             checksum += b
         for k, b in data.items():
             b = bitstring.Bits(uint=b, length=8)
-            b._reverse()
-            data[k] = b.uint
+            ba = BitArray(b)
+            ba.reverse()
+            data[k] = ba.uint
 
         try:
             cs = bitstring.Bits(uint=checksum & 0xff, length=8)
@@ -173,9 +175,10 @@ class Daikin(HVAC):
             logging.exception("Checksum value before reverse after masking : {}".format(checksum & 0xff))
             logging.exception("data was\r\n{}".format(pformat(data)))
             sys.exit(0)
-        cs._reverse()
+        csa = BitArray(cs)
+        csa.reverse()
         checksum = {
-            "cs": cs.uint
+            "cs": csa.uint
         }
         data.update(checksum)
 

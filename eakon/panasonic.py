@@ -7,6 +7,7 @@ import logging
 
 import bitstring
 import sys
+from bitstring import BitArray
 
 from eakon import HVAC
 from eakon.enums import panasonic_enum
@@ -87,7 +88,7 @@ class Panasonic(HVAC):
             "b7": 0x00,
             "b8": 0x06,
         }
-        self._reverse_endianness(frame1_data)
+        self._reverse(frame1_data)
 
         return bitstring.pack(fmt, **frame1_data).bin
 
@@ -135,7 +136,7 @@ class Panasonic(HVAC):
 
         }
         self._get_checksum(frame2_data)
-        self._reverse_endianness(frame2_data)
+        self._reverse(frame2_data)
         return bitstring.pack(fmt, **frame2_data).bin
 
     @staticmethod
@@ -160,11 +161,12 @@ class Panasonic(HVAC):
         return self.power.value + self.mode.value
 
     @staticmethod
-    def _reverse_endianness(data):
+    def _reverse(data):
         for k, b in data.items():
             b = bitstring.Bits(uint=b, length=8)
-            b._reverse()
-            data[k] = b.uint
+            ba = BitArray(b)
+            ba.reverse()
+            data[k] = ba.uint
 
     def _get_fan_settings(self):
         return self.fan_vertical_mode.value + self.fan_power.value
@@ -208,4 +210,4 @@ def _test_panasonic(send_ir=False):
 
 
 if __name__ == '__main__':
-    _test_panasonic(send_ir=True)
+    _test_panasonic(send_ir=False)

@@ -150,22 +150,28 @@ def _test_toshiba(send_ir=False):
     PaPLogger(level=logging.INFO, verbose_fmt=True)
 
     if send_ir:
-        pi = pigpio.pi("node2", 8888)
+        pi = pigpio.pi("yc", 8888)
         if not pi.connected:
-            logging.error("Could not connect to pigpiod on node2")
+            logging.error("Could not connect to pigpiod on yc")
             sys.exit(0)
 
         anavi_phat = AnaviInfraredPhat.IRSEND(pi, r"/proc/cpuinfo")
+    hvac = Toshiba(temperature=26, mode=toshiba_enum.Mode.COOL, power=toshiba_enum.Power.OFF)
+    logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
+    logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
+    if send_ir:
+        anavi_phat.send_ir(code=hvac.wave)
+        sleep(5)
 
-    for mode in [toshiba_enum.Mode.COOL, toshiba_enum.Mode.COOL, toshiba_enum.Mode.DRY, toshiba_enum.Mode.HEAT]:
-        for temp in range(16, 31):
-            hvac = Toshiba(temperature=temp, mode=mode)
-            logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
-            logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
-            if send_ir:
-                anavi_phat.send_ir(code=hvac.wave)
-                sleep(5)
+    # for mode in [toshiba_enum.Mode.COOL, toshiba_enum.Mode.COOL, toshiba_enum.Mode.DRY, toshiba_enum.Mode.HEAT]:
+    #     for temp in range(16, 31):
+    #         hvac = Toshiba(temperature=temp, mode=mode)
+    #         logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.bitstring))
+    #         logging.info("{}_{} : {}".format(hvac.mode, hvac.temperature, hvac.wave))
+    #         if send_ir:
+    #             anavi_phat.send_ir(code=hvac.wave)
+    #             sleep(5)
 
 
 if __name__ == '__main__':
-    _test_toshiba()
+    _test_toshiba(send_ir=True)
