@@ -3,7 +3,6 @@
 """
 Air conditioner classes
 """
-__version__ = "0.0.12"
 __available_models__ = ["daikin", "hitachi", "panasonic", "toshiba"]
 
 import abc
@@ -15,6 +14,7 @@ from pathlib import Path
 from typing import Union
 
 from eakon.enums import common_enum
+from eakon.version import __version__
 
 
 class HVAC:
@@ -73,6 +73,7 @@ class HVAC:
         if room_clean:
             self.room_clean = room_clean
         self.save_on_update = save_on_update
+        logging.info(f"Eakon {__version__} - Instance of {self.__name} initialized")
 
     def to_dict(self):
         """
@@ -471,11 +472,13 @@ def get_available_models() -> [str]:
     return __available_models__
 
 
+__all__ = ["__version__", "get_eakon_instance_by_model", "get_available_models"]
+
 if __name__ == '__main__':
     from pap_logger import PaPLogger
 
     PaPLogger(level=logging.INFO, verbose_fmt=True)
-    for model in __available_models__:
+    for model in get_available_models():
         try:
             e = get_eakon_instance_by_model(model)
             print(e.min_temp)

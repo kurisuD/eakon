@@ -1,12 +1,14 @@
 # coding=utf-8
 import setuptools
 
+from eakon.version import __version__
+
 with open("README.md") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="eakon",
-    version="0.0.13",
+    version=__version__,
     author="KurisuD",
     author_email="KurisuD@pypi.darnand.net",
     description="A simple library to control (japanese) air-conditioners",
