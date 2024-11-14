@@ -107,7 +107,13 @@ class HVAC:
                         val = v
                     else:
                         split = v.split(".")
-                        val = getattr(self._enum, split[0])[split[1]]
+                        if len(split) == 2:
+                            val = getattr(self._enum, split[0])[split[1]]
+                        else:
+                            logging.error(
+                                "{} has an improperly formatted value for key {} : {}".format(self.json_file, k, v)
+                            )
+                            continue
                     self.__setattr__(k, val)
             else:
                 logging.warning("failed to load from {} : file doesn't exists.".format(self.json_file))
